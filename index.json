@@ -1,0 +1,105 @@
+{
+    "ds": {
+        "defines": [
+            "ds::range_query",
+            "ds::Fold",
+            "ds::vec_segtree",
+            "ds::VecSegtree"
+        ]
+    },
+    "ds::range_query": {
+        "defined": "ds/range_query.rs",
+        "uses": []
+    },
+    "ds::Fold": {
+        "defined": "ds/range_query.rs",
+        "uses": []
+    },
+    "ds::vec_segtree": {
+        "defined": "ds/vec_segtree.rs",
+        "uses": [
+            "algebra::Monoid",
+            "ds::Fold"
+        ]
+    },
+    "ds::VecSegtree": {
+        "defined": "ds/vec_segtree.rs",
+        "uses": [
+            "algebra::Monoid",
+            "ds::Fold"
+        ]
+    },
+    "algebra": {
+        "defines": [
+            "algebra::gcd",
+            "algebra::Gcd",
+            "algebra::additive",
+            "algebra::Additive",
+            "algebra::structures",
+            "algebra::Magma",
+            "algebra::Semigroup",
+            "algebra::Monoid",
+            "algebra::Group",
+            "algebra::AbelianMonoid",
+            "algebra::AbelianGroup"
+        ]
+    },
+    "algebra::gcd": {
+        "defined": "algebra/gcd.rs",
+        "uses": [
+            "algebra::AbelianMonoid",
+            "algebra::Magma",
+            "algebra::Monoid",
+            "algebra::Semigroup"
+        ]
+    },
+    "algebra::Gcd": {
+        "defined": "algebra/gcd.rs",
+        "uses": [
+            "algebra::AbelianMonoid",
+            "algebra::Magma",
+            "algebra::Monoid",
+            "algebra::Semigroup"
+        ]
+    },
+    "algebra::additive": {
+        "defined": "algebra/additive.rs",
+        "uses": [
+            "algebra::*"
+        ]
+    },
+    "algebra::Additive": {
+        "defined": "algebra/additive.rs",
+        "uses": [
+            "algebra::*"
+        ]
+    },
+    "algebra::structures": {
+        "defined": "algebra/structures.rs",
+        "uses": []
+    },
+    "algebra::Magma": {
+        "defined": "algebra/structures.rs",
+        "uses": []
+    },
+    "algebra::Semigroup": {
+        "defined": "algebra/structures.rs",
+        "uses": []
+    },
+    "algebra::Monoid": {
+        "defined": "algebra/structures.rs",
+        "uses": []
+    },
+    "algebra::Group": {
+        "defined": "algebra/structures.rs",
+        "uses": []
+    },
+    "algebra::AbelianMonoid": {
+        "defined": "algebra/structures.rs",
+        "uses": []
+    },
+    "algebra::AbelianGroup": {
+        "defined": "algebra/structures.rs",
+        "uses": []
+    }
+}
