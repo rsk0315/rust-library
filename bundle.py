@@ -86,6 +86,7 @@ def bundle(output, bundled, use_lines):
 
     output += SEPARATOR
 
+    # TODO: ドキュメントコメントとテストは除くべきだよね。
     for dirname in rs:
         output += f'pub mod {dirname} {{\n'
         first = True
