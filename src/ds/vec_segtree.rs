@@ -1,8 +1,8 @@
 use std::convert::From;
 use std::iter::FromIterator;
-use std::ops::{Range, RangeFrom, RangeFull, RangeTo};
 
 use crate::algebra::Monoid;
+use crate::ds::BufRange;
 #[doc(hidden)]
 pub use crate::ds::Fold;
 
@@ -19,10 +19,10 @@ impl<M: Monoid> VecSegtree<M> {
         }
     }
 }
-impl<M: Monoid> Fold<Range<usize>> for VecSegtree<M> {
+impl<M: Monoid, R: BufRange> Fold<R> for VecSegtree<M> {
     type Output = M::Set;
-    fn fold(&self, irange: Range<usize>) -> M::Set {
-        let (mut l, mut r) = (irange.start, irange.end);
+    fn fold(&self, irange: R) -> M::Set {
+        let (mut l, mut r) = irange.bounds_within(self.len);
         let (mut resl, mut resr) = (M::id(), M::id());
         if r > self.len || l >= r {
             return resl;
@@ -42,24 +42,6 @@ impl<M: Monoid> Fold<Range<usize>> for VecSegtree<M> {
             r >>= 1;
         }
         M::op(resl, resr)
-    }
-}
-impl<M: Monoid> Fold<RangeFull> for VecSegtree<M> {
-    type Output = M::Set;
-    fn fold(&self, _: RangeFull) -> M::Set {
-        self.fold(0..self.len)
-    }
-}
-impl<M: Monoid> Fold<RangeFrom<usize>> for VecSegtree<M> {
-    type Output = M::Set;
-    fn fold(&self, irange: RangeFrom<usize>) -> M::Set {
-        self.fold(irange.start..self.len)
-    }
-}
-impl<M: Monoid> Fold<RangeTo<usize>> for VecSegtree<M> {
-    type Output = M::Set;
-    fn fold(&self, irange: RangeTo<usize>) -> M::Set {
-        self.fold(0..irange.end)
     }
 }
 impl<M: Monoid> From<Vec<M::Set>> for VecSegtree<M> {
