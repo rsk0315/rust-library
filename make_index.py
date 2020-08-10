@@ -1,17 +1,20 @@
 import glob
 import json
+import os
 import re
 
 
-FILE_RE = re.compile(r'src/([^/]+)/([^/]+)\.rs')
+FILE_RE = re.compile(r'src/([^/]+)/([^/]+)\.rs$')
 DEFINE_RE = re.compile(r'^\s*pub (?:struct|trait) (\w+)')
 USE_SINGLE_RE = re.compile(r'^\s*(?:pub )?use crate::(\w+)::(\w+|\*)')
 USE_MULTIPLE_RE = re.compile(r'^\s*(?:pub )?use crate::(\w+)::\{([\w, ]+)\};')
 USE_MULTILINE_RE = re.compile(r'^\s*(?:pub )?use crate::(\w+)::\{$')
 
+LIB_ROOT = f'{os.path.expanduser("~")}/git/rsk0315/rust-library'
+
 
 def parse(fin, deps):
-    dirname, basename = FILE_RE.fullmatch(fin.name).group(1, 2)
+    dirname, basename = FILE_RE.search(fin.name).group(1, 2)
     defines = [f'{dirname}::{basename}']
     uses = []
     if dirname not in deps:
@@ -47,7 +50,7 @@ def parse(fin, deps):
 
 
 def analysis_deps():
-    rs = glob.glob('src/*/*.rs')
+    rs = glob.glob(f'{LIB_ROOT}/src/*/*.rs')
     deps = {}
     for f in rs:
         with open(f) as fin:
