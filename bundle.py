@@ -11,6 +11,9 @@ USE_SINGLE_RE = re.compile(r'^\s*(?:pub )?use my::(\w+)::(\w+|\*)')
 USE_MULTIPLE_RE = re.compile(r'^\s*(?:pub )?use my::(\w+)::\{([\w, ]+)\};')
 USE_MULTILINE_RE = re.compile(r'^\s*(?:pub )?use my::(\w+)::\{$')
 
+DOC_COMMENT_RE = re.compile(r'\s*//!')
+TEST_ATTR_RE = re.compile(r'#\[test\]|#\[cfg\(test\)\]')
+
 SEPARATOR = '''
 // -------- Following codes are bundled automatically. -------- //
 
@@ -86,16 +89,27 @@ def bundle(output, bundled, use_lines):
 
     output += SEPARATOR
 
-    # TODO: ドキュメントコメントとテストは除くべきだよね。
     for dirname in rs:
         output += f'pub mod {dirname} {{\n'
         first = True
         for basename in rs[dirname]:
             if not first: output += '\n'
             output += f'    pub mod {basename} {{\n'
+            blank = False
             with open(f'{LIB_ROOT}/src/{dirname}/{basename}.rs') as fin:
                 for line in fin:
-                    if line != '\n': output += '        '
+                    if DOC_COMMENT_RE.match(line): continue
+                    if TEST_ATTR_RE.match(line):
+                        make_index.skip_test(fin)
+                        blank = False
+                        continue
+                    if line == '\n':
+                        blank = True
+                        continue
+
+                    if blank: line += '\n'
+                    blank = False
+                    output += '        '
                     output += line
             output += f'    }}\n'
             output += f'    pub use {basename}::*;\n'

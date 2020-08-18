@@ -10,7 +10,23 @@ USE_SINGLE_RE = re.compile(r'^\s*(?:pub )?use crate::(\w+)::(\w+|\*)')
 USE_MULTIPLE_RE = re.compile(r'^\s*(?:pub )?use crate::(\w+)::\{([\w, ]+)\};')
 USE_MULTILINE_RE = re.compile(r'^\s*(?:pub )?use crate::(\w+)::\{$')
 
+DOC_COMMENT_RE = re.compile(r'\s*//!')
+TEST_ATTR_RE = re.compile(r'#\[test\]|#\[cfg\(test\)\]')
+
 LIB_ROOT = f'{os.path.expanduser("~")}/git/rsk0315/rust-library'
+
+
+def skip_test(fin):
+    # 複数行文字列・コメントとかで最後に { や } があるとこわれる気がするよ
+    opening = 0
+    for line in fin:
+        line = line.strip()
+        if line.endswith('{'):
+            opening += 1
+        elif line.endswith('}'):
+            opening -= 1
+
+        if opening == 0: return
 
 
 def parse(fin, deps):
@@ -22,6 +38,11 @@ def parse(fin, deps):
 
     for line in fin:
         line = line.rstrip()
+        if DOC_COMMENT_RE.match(line): continue
+        if TEST_ATTR_RE.match(line):
+            skip_test(fin)
+            continue
+
         if (m := DEFINE_RE.match(line)) is not None:
             defines.append(f'{dirname}::{m.group(1)}')
         elif (m := USE_SINGLE_RE.match(line)) is not None:
