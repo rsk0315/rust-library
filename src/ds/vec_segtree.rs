@@ -60,3 +60,70 @@ impl<M: Monoid> FromIterator<M::Set> for VecSegtree<M> {
         Self::from(Vec::from_iter(iter))
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use crate::ds::Fold;
+    use crate::ds::VecSegtree;
+
+    #[test]
+    fn test_add() {
+        use crate::algebra::Additive;
+        let st: VecSegtree<Additive<i32>> = vec![1, 2, 3, 4, 5].into();
+        assert_eq!(14, st.fold(1..));
+        assert_eq!(3, st.fold(..2));
+        assert_eq!(10, st.fold(0..4));
+        assert_eq!(9, st.fold(1..=3));
+        assert_eq!(6, st.fold(..=2));
+        assert_eq!(15, st.fold(..));
+    }
+
+    #[test]
+    fn test_mul() {
+        use crate::algebra::Multiplicative;
+        let st: VecSegtree<Multiplicative<i32>> = vec![9, 2, 4, 7, 3].into();
+        assert_eq!(168, st.fold(1..));
+        assert_eq!(18, st.fold(..2));
+        assert_eq!(504, st.fold(0..4));
+        assert_eq!(56, st.fold(1..=3));
+        assert_eq!(72, st.fold(..=2));
+        assert_eq!(1512, st.fold(..));
+    }
+
+    #[test]
+    fn test_random() {
+        use crate::algebra::Additive;
+        use crate::random::uniform_int_dist;
+        use crate::random::xorshift::*;
+
+        let mut xs = Xorshift128::new([12, 34, 56, 78]);
+        let n = 1000;
+        let base: Vec<u64> = (0..n)
+            .map(|_| uniform_int_dist(0..=1000, &mut xs) as u64)
+            .collect();
+        let st: VecSegtree<Additive<u64>> = base.clone().into();
+
+        println!("{:?}", base);
+
+        for il in 0..n {
+            let mut sum: u64 = 0;
+            assert_eq!(0, st.fold(il..il));
+            for ir in il..n {
+                sum += base[ir];
+                assert_eq!(sum, st.fold(il..ir + 1));
+            }
+            assert_eq!(sum, st.fold(il..));
+        }
+        assert_eq!(0, st.fold(n..n));
+        assert_eq!(0, st.fold(n..));
+
+        assert_eq!(0, st.fold(..0));
+        let mut sum: u64 = 0;
+        for ir in 0..n {
+            sum += base[ir];
+            assert_eq!(sum, st.fold(..ir + 1));
+        }
+        assert_eq!(sum, st.fold(..n));
+        assert_eq!(sum, st.fold(..));
+    }
+}

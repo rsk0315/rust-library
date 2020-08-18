@@ -1,8 +1,7 @@
 use std::marker::PhantomData;
 use std::ops::{Add, AddAssign, Neg};
 
-use num_traits::Zero;
-
+use crate::algebra::Zero;
 use crate::algebra::{
     AbelianGroup, AbelianMonoid, Group, Magma, Monoid, Semigroup,
 };

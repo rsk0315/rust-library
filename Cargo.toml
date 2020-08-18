@@ -9,4 +9,5 @@ license = "MIT"
 
 [dependencies]
 
+num = "0.1.42"
 num-traits = "0.2.11"

@@ -1,3 +1,33 @@
+//! Range queries.
+//! - [`Fold`]
+//!   - `.fold(il..ir) -> T`
+//! - [`Set`]
+//!   - `.set(i, x)`
+//! - [`Act`]
+//!   - `.act(i, x)`
+//!   - `.act(il..ir, x)`
+//! - [`Rank`]
+//!   - `.rank(il..ir, x) -> usize`
+//! - [`Select`]
+//!   - `.select(il..ir, x) -> Option<usize>`
+//! - [`Quantile`]
+//!   - `.quantile(il..ir, x) -> T`
+//! - [`RangeFreq`]
+//!   - `.rangefreq(il..ir, xl..xr) -> usize`
+//! - [`OrdedCount`]
+//!   - `.orded_count(il..ir, x) -> Orded<usize>`
+//! - [`OrdedSum`]
+//!   - `.orded_sum(il..ir, x) -> Orded<T>`
+//!
+//! Range traits.
+//! - Start{Bounded, Unbounded}
+//! - End{Bounded, Unbounded}
+//!
+//! Inclusive and Exclusive for Bounded ones.
+//!
+//! Orded struct.
+//! `{ lt: T, le: T, eq: T, gt: T, ge: T }`
+
 use std::ops::Bound::*;
 use std::ops::RangeBounds;
 use std::ops::{
@@ -33,11 +63,6 @@ impl<T> EndInclusive<T> for RangeInclusive<T> {}
 impl<T> EndExclusive<T> for RangeTo<T> {}
 impl<T> EndInclusive<T> for RangeToInclusive<T> {}
 
-pub trait Fold<R: RangeBounds<usize>> {
-    type Output;
-    fn fold(&self, irange: R) -> Self::Output;
-}
-
 pub trait BufRange: RangeBounds<usize> {
     fn bounds_within(&self, len: usize) -> (usize, usize) {
         let s_in = match self.start_bound() {
@@ -60,3 +85,12 @@ impl BufRange for RangeFull {}
 impl BufRange for RangeInclusive<usize> {}
 impl BufRange for RangeTo<usize> {}
 impl BufRange for RangeToInclusive<usize> {}
+
+pub trait Fold<R: BufRange> {
+    type Output;
+    fn fold(&self, irange: R) -> Self::Output;
+}
+
+pub trait Set<I> {
+    fn set(&self, index: I);
+}
